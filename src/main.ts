@@ -51,12 +51,16 @@ function displayFilter() {
 }
 
 function filterType(jobs: job[], tags: string[]) {
-  if (tags.length === 0) return jobs;
-
   return jobs.filter((job) => {
     const jobTags = [job.role, job.level, ...job.languages, ...job.tools];
     return tags.every((tag) => jobTags.includes(tag));
   });
+}
+
+function removeTag(tag: string) {
+  selectedTags = selectedTags.filter((t) => t !== tag);
+  displayFilter();
+  displayJobs(filterType(jobs, selectedTags));
 }
 
 function addTag(tag: string) {
@@ -75,13 +79,8 @@ function addTag(tag: string) {
     tagSpan.classList.add("selected-tags");
 
     tagRemove.addEventListener("click", () => {
-      selectedTags.splice(selectedTags.indexOf(tag), 1);
-      //const selectedTags = selectedTags.filter((t) => t !== tag);
+      removeTag(tag);
       tagSec.remove();
-      displayFilter();
-
-      const updateFilter = filterType(jobs, selectedTags);
-      displayJobs(updateFilter);
     });
     tagSec.appendChild(tagSpan);
     tagSec.appendChild(tagRemove);
@@ -129,6 +128,7 @@ function displayJobs(jobsToDisplay: job[]) {
     const jobSkillsandLanguage = document.createElement("div");
     jobSkillsandLanguage.classList.add("language");
 
+    //hr element that only appears on smaller screen
     const hrDiv = document.createElement("hr");
 
     logoImg.src = `${job.logo}`;
@@ -148,6 +148,7 @@ function displayJobs(jobsToDisplay: job[]) {
     locationTimeDiv.innerHTML = `<p>${job.postedAt} <span class='dot'> </span> ${job.contract} <span class='dot'></span> ${job.location}</p>`;
     infoDiv.appendChild(locationTimeDiv);
 
+    //matches how the languages/tools are layed out in the design
     const jobSkills = [...job.jobTags];
 
     jobSkills.forEach((skill) => {
